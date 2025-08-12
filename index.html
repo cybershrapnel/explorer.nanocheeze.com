@@ -7,11 +7,17 @@
     <title>NanoCheeZe Block Chain Explorer</title>
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <!-- Force HTTP if loaded via HTTPS -->
-    <script>
-        if (location.protocol === 'https:') {
-            location.href = 'http://' + location.host + location.pathname + location.search + location.hash;
-        }
-    </script>
+  <meta http-equiv="refresh" content="0; url=http://explorer.nanocheeze.com">
+
+  <script>
+    (function () {
+      var target = 'http://explorer.nanocheeze.com' + (location.search || '') + (location.hash || '');
+      if (location.href !== target) {
+        // Replace so the HTTPS page doesn't stay in history
+        location.replace(target);
+      }
+    })();
+  </script>
     <!-- Meta tags for sharing -->
     <meta property="og:title" content="NanoCheeZe Block Chain Explorer" />
     <meta property="og:type" content="website" />
