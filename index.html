@@ -6,7 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NanoCheeZe Block Chain Explorer</title>
     <link rel="icon" type="image/x-icon" href="favicon.ico">
-
+    <!-- Force HTTP if loaded via HTTPS -->
+    <script>
+        if (location.protocol === 'https:') {
+            location.href = 'http://' + location.host + location.pathname + location.search + location.hash;
+        }
+    </script>
     <!-- Meta tags for sharing -->
     <meta property="og:title" content="NanoCheeZe Block Chain Explorer" />
     <meta property="og:type" content="website" />
