@@ -18,21 +18,20 @@
     html, body { height: 100%; margin: 0; }
     iframe { border: none; width: 100%; height: 100%; }
 
-    /* HTTPS notice styling */
+    /* Hidden by default; only shown on HTTPS via JS */
     .https-notice {
       display: none;
       height: 100%;
       width: 100%;
       box-sizing: border-box;
       padding: 2rem;
-      display: grid;
       place-items: center;
       text-align: center;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
     }
-    .https-card {
-      max-width: 720px;
-    }
+    .https-notice.show { display: grid; }
+
+    .https-card { max-width: 720px; margin: 0 auto; }
     .https-title { font-size: 1.5rem; margin-bottom: 1rem; }
     .https-desc { color: #555; margin-bottom: 1.25rem; }
     .https-link {
@@ -43,9 +42,6 @@
       border: 2px solid #333;
       border-radius: 12px;
     }
-
-    /* Only show the notice when JS decides we're on https */
-    .show { display: grid; }
   </style>
 </head>
 <body>
@@ -54,33 +50,28 @@
     <div class="https-card">
       <div class="https-title">This page can’t load over HTTPS.</div>
       <div class="https-desc">Your browser blocked the HTTP content. Open the explorer directly:</div>
-      <p><a id="httpLink" class="https-link" href="http://explorer.nanocheeze.com">http://explorer.nanocheeze.com</a></p>
+      <p>
+        <a id="httpLink" class="https-link" href="http://explorer.nanocheeze.com" target="_blank" rel="noopener noreferrer">
+          http://explorer.nanocheeze.com
+        </a>
+      </p>
     </div>
   </div>
 
   <!-- Iframe for HTTP mode -->
   <iframe id="explorerFrame" src="http://96.39.183.14" title="NanoCheeZe Block Chain Explorer"></iframe>
 
-  <noscript>
-    <div class="https-notice show">
-      <div class="https-card">
-        <div class="https-title">JavaScript is required to load the explorer here.</div>
-        <div class="https-desc">Open it directly:</div>
-        <p><a class="https-link" href="http://explorer.nanocheeze.com">http://explorer.nanocheeze.com</a></p>
-      </div>
-    </div>
-  </noscript>
-
   <script>
     (function () {
       if (location.protocol === 'https:') {
         var target = 'http://explorer.nanocheeze.com' + (location.search || '') + (location.hash || '');
-        // Update link text+href
         var link = document.getElementById('httpLink');
         link.href = target;
         link.textContent = target;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
 
-        // Show notice, remove iframe to avoid mixed-content/CORS blanks
+        // Show the notice and remove the iframe on HTTPS
         document.getElementById('httpsNotice').classList.add('show');
         var frame = document.getElementById('explorerFrame');
         if (frame) frame.remove();
