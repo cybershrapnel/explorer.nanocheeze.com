@@ -15,25 +15,39 @@
   <meta property="og:description" content="Explore the NanoCheeZe blockchain with our block explorer." />
 
   <style>
-    html, body { height: 100%; margin: 0; }
-    iframe { border: none; width: 100%; height: 100%; }
-
-    /* Hidden by default; only shown on HTTPS via JS */
-    .https-notice {
-      display: none;
+    html, body {
+      margin: 0;
       height: 100%;
+      overflow: hidden; /* no scrollbars, no white line */
+    }
+
+    /* Full-viewport iframe */
+    #explorerFrame {
+      position: fixed;
+      inset: 0;          /* top:0; right:0; bottom:0; left:0 */
       width: 100%;
-      box-sizing: border-box;
-      padding: 2rem;
+      height: 100%;
+      border: 0;
+      display: block;
+    }
+
+    /* HTTPS notice (hidden by default) */
+    .https-notice {
+      position: fixed;
+      inset: 0;
+      display: none;     /* only shown via JS on https */
       place-items: center;
-      text-align: center;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      text-align: center;
+      padding: 0 1rem;
+      box-sizing: border-box;
+      background: #fff;  /* avoid background gaps/lines */
     }
     .https-notice.show { display: grid; }
 
-    .https-card { max-width: 720px; margin: 0 auto; }
-    .https-title { font-size: 1.5rem; margin-bottom: 1rem; }
-    .https-desc { color: #555; margin-bottom: 1.25rem; }
+    .https-card { max-width: 720px; }
+    .https-title { font-size: 1.5rem; margin-bottom: 0.75rem; }
+    .https-desc { color: #555; margin-bottom: 1rem; }
     .https-link {
       display: inline-block;
       padding: 0.9rem 1.2rem;
@@ -42,6 +56,7 @@
       border: 2px solid #333;
       border-radius: 12px;
     }
+    .hint { margin-top: 0.75rem; font-size: 0.9rem; color: #666; }
   </style>
 </head>
 <body>
@@ -51,27 +66,44 @@
       <div class="https-title">This page can’t load over HTTPS.</div>
       <div class="https-desc">Your browser blocked the HTTP content. Open the explorer directly:</div>
       <p>
-        <a id="httpLink" class="https-link" href="http://explorer.nanocheeze.com" target="_blank" rel="noopener noreferrer">
+        <a id="httpLink" class="https-link" href="http://96.39.183.14" target="_blank" rel="noopener noreferrer">
           http://explorer.nanocheeze.com
         </a>
       </p>
+      <div class="hint">Opens in a new tab. Uses the server’s HTTP IP to bypass HTTPS auto-upgrade.</div>
     </div>
   </div>
 
   <!-- Iframe for HTTP mode -->
   <iframe id="explorerFrame" src="http://96.39.183.14" title="NanoCheeZe Block Chain Explorer"></iframe>
 
+  <noscript>
+    <div class="https-notice show">
+      <div class="https-card">
+        <div class="https-title">JavaScript is required to load the explorer here.</div>
+        <div class="https-desc">Open it directly:</div>
+        <p>
+          <a class="https-link" href="http://96.39.183.14" target="_blank" rel="noopener noreferrer">
+            http://explorer.nanocheeze.com
+          </a>
+        </p>
+      </div>
+    </div>
+  </noscript>
+
   <script>
     (function () {
       if (location.protocol === 'https:') {
-        var target = 'http://explorer.nanocheeze.com' + (location.search || '') + (location.hash || '');
+        // Preserve query/hash when sending to the IP (prevents HTTPS auto-upgrade on the hostname)
+        var target = 'http://96.39.183.14' + (location.search || '') + (location.hash || '');
+
         var link = document.getElementById('httpLink');
-        link.href = target;
-        link.textContent = target;
+        link.href = target;                          // real HTTP target (IP)
+        link.textContent = 'http://explorer.nanocheeze.com' + (location.search || '') + (location.hash || '');
         link.target = '_blank';
         link.rel = 'noopener noreferrer';
 
-        // Show the notice and remove the iframe on HTTPS
+        // Show notice and remove iframe to avoid mixed-content blank
         document.getElementById('httpsNotice').classList.add('show');
         var frame = document.getElementById('explorerFrame');
         if (frame) frame.remove();
